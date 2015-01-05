@@ -7,3 +7,12 @@ C:\Users\nongnoobjung\Desktop\src\obj\x86\Release\RitoBot.Properties.Resources.r
 C:\Users\nongnoobjung\Desktop\src\obj\x86\Release\RitoBot.csproj.GenerateResource.Cache
 C:\Users\nongnoobjung\Desktop\src\obj\x86\Release\RitoBot.exe
 C:\Users\nongnoobjung\Desktop\src\obj\x86\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Desktop\volibot Garena\bin\Release\RitoBot.exe.config
+C:\Users\nongnoobjung\Desktop\volibot Garena\obj\x86\Release\RitoBot.exe
+C:\Users\nongnoobjung\Desktop\volibot Garena\obj\x86\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Desktop\volibot Garena\bin\Release\RitoBot.exe
+C:\Users\nongnoobjung\Desktop\volibot Garena\bin\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Desktop\volibot Garena\obj\x86\Release\RitoBot.csprojResolveAssemblyReference.cache
+C:\Users\nongnoobjung\Desktop\volibot Garena\obj\x86\Release\RitoBot.frm_MainWindow.resources
+C:\Users\nongnoobjung\Desktop\volibot Garena\obj\x86\Release\RitoBot.Properties.Resources.resources
+C:\Users\nongnoobjung\Desktop\volibot Garena\obj\x86\Release\RitoBot.csproj.GenerateResource.Cache

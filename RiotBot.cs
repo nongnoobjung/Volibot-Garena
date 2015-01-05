@@ -385,7 +385,7 @@ namespace RitoBot
             if (Program.LoadGUI) Program.MainWindow.Print(string.Concat(new object[4]
               {     
                 (object) "[",
-                (object) s1,
+                (object) accname,
                 (object) "]: ",
                 (object) status
               }));
@@ -395,7 +395,7 @@ namespace RitoBot
                 (object) DateTime.Now,
                 (object) "] ",        
                 (object) "[",
-                (object) s1,
+                (object) accname,
                 (object) "]: ",
                 (object) status
               }));
