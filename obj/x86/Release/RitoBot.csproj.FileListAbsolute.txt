@@ -1,0 +1,8 @@
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\bin\Release\RitoBot.exe.config
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\bin\Release\RitoBot.exe
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\bin\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\obj\x86\Release\RitoBot.frm_MainWindow.resources
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\obj\x86\Release\RitoBot.Properties.Resources.resources
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\obj\x86\Release\RitoBot.csproj.GenerateResource.Cache
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\obj\x86\Release\RitoBot.exe
+C:\Users\nongnoobjung\Desktop\Volibot-Garena-master\obj\x86\Release\RitoBot.pdb
