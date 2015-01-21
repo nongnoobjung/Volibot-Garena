@@ -96,14 +96,14 @@ namespace RitoBot
                     }
                     if (result[2] != null)
                     {
-                        QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[3]);
-                        RiotBot ritoBot = new RiotBot(result[0], result[1], result[2], Program.Region, Program.Path2, curRunning, queuetype);
+                        QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[2]);
+                        RiotBot ritoBot = new RiotBot(result[0], result[1], Program.Region, Program.Path2, curRunning, queuetype);
                         ShowAccount(result[0], result[1], result[2]);
                     }
                     else
                     {
                         QueueTypes queuetype = QueueTypes.ARAM;
-                        RiotBot ritoBot = new RiotBot(result[0], result[1], result[2], Program.Region, Program.Path2, curRunning, queuetype);
+                        RiotBot ritoBot = new RiotBot(result[0], result[1], Program.Region, Program.Path2, curRunning, queuetype);
                         ShowAccount(result[0], result[1], "ARAM");
                     }
                     Program.MainWindow.Text = " Volibot GUI | Currently connected: " + Program.connectedAccs;

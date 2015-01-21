@@ -88,7 +88,7 @@ namespace LoLLauncher
 
         #region Connect, Login, and Heartbeat Methods
 
-        public void Connect(string user, string password, string gToken, Region region, string clientVersion)
+        public void Connect(string user, string password, Region region, string clientVersion)
         {
             if (!isConnected)
             {
@@ -96,13 +96,13 @@ namespace LoLLauncher
                 {
                     this.user = user;
                     this.password = password;
-                    this.garenaToken = gToken;
                     this.clientVersion = clientVersion;
                     //this.server = "127.0.0.1";
                     this.server = RegionInfo.GetServerValue(region);
                     this.loginQueue = RegionInfo.GetLoginQueueValue(region);
                     this.locale = RegionInfo.GetLocaleValue(region);
                     this.useGarena = RegionInfo.GetUseGarenaValue(region);
+                    this.garenaToken = password;
 
                     //Sets up our sslStream to riots servers
                     try
@@ -118,10 +118,10 @@ namespace LoLLauncher
 
                     //Check for riot webserver status
                     //along with gettin out Auth Key that we need for the login process.
-                  /*  if (useGarena)
-                        if (!GetGarenaToken())
-                            return;
-                  */
+                    /*  if (useGarena)
+                          if (!GetGarenaToken())
+                              return;
+                      */
                     if (!GetAuthKey())
                         return;
 
@@ -251,6 +251,7 @@ namespace LoLLauncher
             Disconnect();
             return false;
         }
+
         private string reToken(string s)
         {
             string s1 = s.Replace("/", "%2F");
@@ -269,9 +270,8 @@ namespace LoLLauncher
                 if (useGarena)
                 {
                     payload = reToken(garenaToken);
-                    query = "payload=8393%20"+payload;
+                    query = "payload=8393%20" + payload;
                 }
-
 
                 WebRequest con = WebRequest.Create(loginQueue + "login-queue/rest/queue/authenticate");
                 con.Method = "POST";
@@ -382,6 +382,7 @@ namespace LoLLauncher
                 if (OnLoginQueueUpdate != null)
                     OnLoginQueueUpdate(this, 0);
                 authToken = result.GetString("token");
+                userID = result.GetString("user");
 
                 return true;
             }
@@ -553,9 +554,8 @@ namespace LoLLauncher
             if (useGarena)
             {
                 cred.PartnerCredentials = "8393 " + garenaToken;
-                cred.Username = password;
+                cred.Username = userID;
                 cred.Password = null;
-
             }
             else
             {
@@ -596,7 +596,7 @@ namespace LoLLauncher
             // Login 2
 
             if (useGarena)
-                body = WrapBody(Convert.ToBase64String(Encoding.UTF8.GetBytes(password + ":" + sessionToken)), "auth", 8);
+                body = WrapBody(Convert.ToBase64String(Encoding.UTF8.GetBytes(userID + ":" + sessionToken)), "auth", 8);
             else
                 body = WrapBody(Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ToLower() + ":" + sessionToken)), "auth", 8);
 
