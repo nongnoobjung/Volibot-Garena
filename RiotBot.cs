@@ -65,7 +65,6 @@ namespace RitoBot
         public string ipath;
         public string Accountname;
         public string Password;
-        public string gToken;
         public int threadID;
         public double sumLevel { get; set; }
         public double archiveSumLevel { get; set; }
@@ -77,12 +76,11 @@ namespace RitoBot
         public string regionURL;
         public bool QueueFlag;
 
-        public RiotBot(string username, string password, string garenaToken, string reg, string path, int threadid, QueueTypes QueueType)
+        public RiotBot(string username, string password, string reg, string path, int threadid, QueueTypes QueueType)
         {
             ipath = path;
             Accountname = username;
             Password = password;
-            gToken = garenaToken;
             threadID = threadid;
             queueType = QueueType;
             region = reg;
@@ -95,19 +93,19 @@ namespace RitoBot
             switch (region)
             {
                 case "TH":
-                    connection.Connect(username, password, gToken, Region.TH, Program.cversion);
+                    connection.Connect(username, password, Region.TH, Program.cversion);
                     break;
                 case "SGMY":
-                    connection.Connect(username, password, gToken, Region.SGMY, Program.cversion);
+                    connection.Connect(username, password, Region.SGMY, Program.cversion);
                     break;
                 case "TW":
-                    connection.Connect(username, password, gToken, Region.TW, Program.cversion);
+                    connection.Connect(username, password, Region.TW, Program.cversion);
                     break;
                 case "PH":
-                    connection.Connect(username, password, gToken, Region.PH, Program.cversion);
+                    connection.Connect(username, password, Region.PH, Program.cversion);
                     break;
                 case "VN":
-                    connection.Connect(username, password, gToken, Region.VN, Program.cversion);
+                    connection.Connect(username, password, Region.VN, Program.cversion);
                     break;
             }
         }
@@ -129,7 +127,7 @@ namespace RitoBot
                             {
                                 if (Program.championId != "" && Program.championId != "RANDOM")
                                 {
-								
+
                                     int Spell1;
                                     int Spell2;
                                     if (!Program.rndSpell)
@@ -159,13 +157,13 @@ namespace RitoBot
                                     }
 
                                     await connection.SelectSpells(Spell1, Spell2);
-								
+
                                     await connection.SelectChampion(Enums.championToId(Program.championId));
                                     await connection.ChampionSelectCompleted();
                                 }
                                 else if (Program.championId == "RANDOM")
                                 {
-								
+
                                     int Spell1;
                                     int Spell2;
                                     if (!Program.rndSpell)
@@ -195,7 +193,7 @@ namespace RitoBot
                                     }
 
                                     await connection.SelectSpells(Spell1, Spell2);
-									
+
                                     var randAvailableChampsArray = availableChampsArray.Shuffle();
                                     await connection.SelectChampion(randAvailableChampsArray.First(champ => champ.Owned || champ.FreeToPlay).ChampionId);
                                     await connection.ChampionSelectCompleted();
@@ -203,7 +201,7 @@ namespace RitoBot
                                 }
                                 else
                                 {
-								
+
                                     int Spell1;
                                     int Spell2;
                                     if (!Program.rndSpell)
@@ -233,7 +231,7 @@ namespace RitoBot
                                     }
 
                                     await connection.SelectSpells(Spell1, Spell2);
-									
+
                                     await connection.SelectChampion(availableChampsArray.First(champ => champ.Owned || champ.FreeToPlay).ChampionId);
                                     await connection.ChampionSelectCompleted();
                                 }
@@ -283,7 +281,7 @@ namespace RitoBot
             }
             else if (message is PlayerCredentialsDto)
             {
-                string str = ipath+ "GAME\\";
+                string str = ipath + "GAME\\";
                 /* string str = Enumerable.Last<string>((IEnumerable<string>)Enumerable.OrderBy<string, DateTime>(Directory.EnumerateDirectories((this.ipath ?? "")
                      + "RADS\\solutions\\lol_game_client_sln\\releases\\"), (Func<string, DateTime>)(f => new DirectoryInfo(f).CreationTime))) + "\\deploy\\";*/
                 LoLLauncher.RiotObjects.Platform.Game.PlayerCredentialsDto credentials = message as PlayerCredentialsDto;
@@ -385,22 +383,22 @@ namespace RitoBot
 
         void exeProcess_Exited(object sender, EventArgs e)
         {
-           updateStatus("Restart League of Legends.", Accountname);
-           Thread.Sleep(1000);
-           if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
-           {
-               this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
-           }
-           else
-               this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
+            updateStatus("Restart League of Legends.", Accountname);
+            Thread.Sleep(1000);
+            if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
+            {
+                this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
+            }
+            else
+                this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
         }
-        
+
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        
+
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-       
+
         private void updateStatus(string status, string accname)
         {
 
@@ -422,15 +420,15 @@ namespace RitoBot
                 (object) "]: ",
                 (object) status
               }));
-        }        
-        
+        }
+
         private async void RegisterNotifications()
         {
             object obj1 = await this.connection.Subscribe("bc", this.connection.AccountID());
             object obj2 = await this.connection.Subscribe("cn", this.connection.AccountID());
             object obj3 = await this.connection.Subscribe("gn", this.connection.AccountID());
         }
-        
+
         private void connection_OnLoginQueueUpdate(object sender, int positionInLine)
         {
             if (positionInLine <= 0)
@@ -441,10 +439,10 @@ namespace RitoBot
         private void connection_OnLogin(object sender, string username, string ipAddress)
         {
             new Thread((ThreadStart)(async () =>
-            { 
+            {
                 updateStatus("Connecting...", Accountname);
                 this.RegisterNotifications();
-                this.loginPacket = await this.connection.GetLoginDataPacketForUser(); 
+                this.loginPacket = await this.connection.GetLoginDataPacketForUser();
                 if (loginPacket.AllSummonerData == null)
                 {
                     Random rnd = new Random();
@@ -486,13 +484,15 @@ namespace RitoBot
                     this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 3", Accountname);
                     queueType = QueueTypes.BEGINNER_BOT;
                     actualQueueType = QueueTypes.NORMAL_5x5;
-                } else if (sumLevel < 6.0 && queueType == QueueTypes.ARAM)
+                }
+                else if (sumLevel < 6.0 && queueType == QueueTypes.ARAM)
                 {
                     this.updateStatus("Need to be Level 6 before ARAM queue.", Accountname);
                     this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 6", Accountname);
                     queueType = QueueTypes.BEGINNER_BOT;
                     actualQueueType = QueueTypes.ARAM;
-                } else if (sumLevel < 7.0 && queueType == QueueTypes.NORMAL_3x3)
+                }
+                else if (sumLevel < 7.0 && queueType == QueueTypes.NORMAL_3x3)
                 {
                     this.updateStatus("Need to be Level 7 before NORMAL_3x3 queue.", Accountname);
                     this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 7", Accountname);
@@ -526,7 +526,7 @@ namespace RitoBot
                     this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
             })).Start();
         }
-        
+
         private void connection_OnError(object sender, LoLLauncher.Error error)
         {
             if (error.Message.Contains("is not owned by summoner"))
@@ -556,20 +556,20 @@ namespace RitoBot
             }
             this.updateStatus("error received:\n" + error.Message, Accountname);
         }
-        
+
         private void connection_OnDisconnect(object sender, EventArgs e)
         {
             Program.connectedAccs -= 1;
             Console.Title = " Current Connected: " + Program.connectedAccs;
             this.updateStatus("Disconnected", Accountname);
         }
-       
+
         private void connection_OnConnect(object sender, EventArgs e)
         {
             Program.connectedAccs += 1;
             Console.Title = " Current Connected: " + Program.connectedAccs;
         }
- 
+
         public void levelUp()
         {
             updateStatus("Level Up: " + sumLevel, Accountname);
@@ -578,8 +578,9 @@ namespace RitoBot
             {
                 connection.Disconnect();
                 //bool connectStatus = await connection.IsConnected();
-                if (!connection.IsConnected()) {
-                Program.lognNewAccount(); 
+                if (!connection.IsConnected())
+                {
+                    Program.lognNewAccount();
                 }
             }
             if (rpBalance == 400.0 && Program.buyBoost)
@@ -628,9 +629,9 @@ namespace RitoBot
                     HttpClient httpClient = new HttpClient();
                     Console.WriteLine(url);
                     await httpClient.GetStringAsync(url);
-                    string storeURL = "https://store." + region.Substring(0,3).ToLower() + "1.lol.riotgames.com/store/tabs/view/boosts/1";
+                    string storeURL = "https://store." + region.Substring(0, 3).ToLower() + "1.lol.riotgames.com/store/tabs/view/boosts/1";
                     await httpClient.GetStringAsync(storeURL);
-                    string purchaseURL = "https://store." + region.Substring(0,3).ToLower() + "1.lol.riotgames.com/store/purchase/item";
+                    string purchaseURL = "https://store." + region.Substring(0, 3).ToLower() + "1.lol.riotgames.com/store/purchase/item";
                     List<KeyValuePair<string, string>> storeItemList = new List<KeyValuePair<string, string>>();
                     storeItemList.Add(new KeyValuePair<string, string>("item_id", "boosts_2"));
                     storeItemList.Add(new KeyValuePair<string, string>("currency_type", "rp"));

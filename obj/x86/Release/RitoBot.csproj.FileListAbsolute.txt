@@ -7,3 +7,12 @@ C:\0LSharpDev0\Public\git\Volibot-Garena\obj\x86\Release\RitoBot.Properties.Reso
 C:\0LSharpDev0\Public\git\Volibot-Garena\obj\x86\Release\RitoBot.csproj.GenerateResource.Cache
 C:\0LSharpDev0\Public\git\Volibot-Garena\obj\x86\Release\RitoBot.exe
 C:\0LSharpDev0\Public\git\Volibot-Garena\obj\x86\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\bin\Release\RitoBot.exe.config
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\bin\Release\RitoBot.exe
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\bin\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\obj\x86\Release\RitoBot.frm_MainWindow.resources
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\obj\x86\Release\RitoBot.Properties.Resources.resources
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\obj\x86\Release\RitoBot.csproj.GenerateResource.Cache
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\obj\x86\Release\RitoBot.exe
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\obj\x86\Release\RitoBot.pdb
+C:\Users\nongnoobjung\Documents\GitHub\Volibot-Garena\obj\x86\Release\RitoBot.csprojResolveAssemblyReference.cache
