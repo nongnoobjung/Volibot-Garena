@@ -347,9 +347,9 @@ namespace RitoBot
             this.passwordLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.passwordLabel.Location = new System.Drawing.Point(3, 36);
             this.passwordLabel.Name = "passwordLabel";
-            this.passwordLabel.Size = new System.Drawing.Size(73, 13);
+            this.passwordLabel.Size = new System.Drawing.Size(53, 13);
             this.passwordLabel.TabIndex = 2;
-            this.passwordLabel.Text = "GarenaToken";
+            this.passwordLabel.Text = "Password";
             // 
             // newUserNameInput
             // 
@@ -633,8 +633,8 @@ namespace RitoBot
             this.BuyBoostInput.Dock = System.Windows.Forms.DockStyle.Top;
             this.BuyBoostInput.FormattingEnabled = true;
             this.BuyBoostInput.Items.AddRange(new object[] {
-            "NO",
-            "not working need price 3 day boost per regions"});
+            "YES",
+            "NO"});
             this.BuyBoostInput.Location = new System.Drawing.Point(3, 151);
             this.BuyBoostInput.Name = "BuyBoostInput";
             this.BuyBoostInput.Size = new System.Drawing.Size(331, 21);
@@ -721,11 +721,16 @@ namespace RitoBot
             this.RegionInput.Dock = System.Windows.Forms.DockStyle.Top;
             this.RegionInput.FormattingEnabled = true;
             this.RegionInput.Items.AddRange(new object[] {
-            "TH",
-            "VN",
-            "TW",
-            "SGMY",
-            "PH"});
+            "NA",
+            "EUW",
+            "EUNE",
+            "OCE",
+            "LAN",
+            "LAS",
+            "BR",
+            "TR",
+            "RU",
+            "QQ"});
             this.RegionInput.Location = new System.Drawing.Point(3, 49);
             this.RegionInput.Name = "RegionInput";
             this.RegionInput.Size = new System.Drawing.Size(331, 21);
@@ -755,9 +760,9 @@ namespace RitoBot
             this.launcherPathLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.launcherPathLabel.Location = new System.Drawing.Point(3, 3);
             this.launcherPathLabel.Name = "launcherPathLabel";
-            this.launcherPathLabel.Size = new System.Drawing.Size(74, 13);
+            this.launcherPathLabel.Size = new System.Drawing.Size(118, 13);
             this.launcherPathLabel.TabIndex = 2;
-            this.launcherPathLabel.Text = "Path to lol.exe";
+            this.launcherPathLabel.Text = "Path to lol.launcher.exe";
             // 
             // console
             // 
