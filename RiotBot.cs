@@ -75,6 +75,7 @@ namespace RitoBot
 
         public string region { get; set; }
         public string regionURL;
+        public bool QueueFlag;
 
         public RiotBot(string username, string password, string garenaToken, string reg, string path, int threadid, QueueTypes QueueType)
         {
@@ -253,13 +254,16 @@ namespace RitoBot
                         break;
                     case "GameClientConnectedToServer":
                         this.updateStatus("Client connected to the server", Accountname);
+                        QueueFlag = true;
                         break;
                     case "IN_QUEUE":
                         this.updateStatus("In Queue", Accountname);
+                        QueueFlag = true;
                         break;
                     case "TERMINATED":
                         this.updateStatus("Re-entering queue", Accountname);
                         this.firstTimeInQueuePop = true;
+                        QueueFlag = false;
                         break;
                     case "JOINING_CHAMP_SELECT":
                         if (this.firstTimeInQueuePop && game.StatusOfParticipants.Contains("1"))
@@ -273,8 +277,7 @@ namespace RitoBot
                         else
                             break;
                     case "LEAVER_BUSTED":
-                        this.updateStatus("Leave busted, attempting to accept queue", Accountname);
-                        await this.connection.AcceptPoppedGame(true);
+                        this.updateStatus("Leave busted", Accountname);
                         break;
                 }
             }
@@ -343,7 +346,21 @@ namespace RitoBot
                         {
                             updateStatus("Couldn't enter Q - " + m.PlayerJoinFailures.Summoner.Name + " : " + m.PlayerJoinFailures.ReasonFailed, Accountname);
                         }
-                        catch (Exception) { Console.WriteLine("Something went wrong, couldn't enter queue. Check accounts.txt for correct queue type."); connection.Disconnect(); }
+                        catch (Exception)
+                        {
+
+                            if (QueueFlag)
+                            {
+                                this.updateStatus("waiting for leavebuster ;)", Accountname);
+                            }
+                            else
+                            {
+
+                                Console.WriteLine(
+                                    "Something went wrong, couldn't enter queue. Check accounts.txt for correct queue type.");
+                                connection.Disconnect();
+                            }
+                        }
                     }
                 }
                 else
@@ -361,16 +378,6 @@ namespace RitoBot
                         {
                             levelUp();
                         }
-                    }
-                    if (message is EndOfGameStats)
-                    {
-                        EndOfGameStats msg = message as EndOfGameStats;
-                        if (msg.GameLength == null)
-                        {
-                            this.updateStatus("Leave busted, attempting to accept queue", Accountname);
-                            await this.connection.AcceptPoppedGame(true);
-                        }
-
                     }
                 }
             }
