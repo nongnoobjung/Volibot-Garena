@@ -50,6 +50,18 @@ namespace LoLLauncher.RiotObjects.Platform.Matchmaking
 
         [InternalName("dodgePenaltyRemainingTime")]
         public Int32 DodgePenaltyRemainingTime { get; set; }
+        [InternalName("leaverPenaltyMillisRemaining")]
+        public int LeaverPenaltyMillisRemaining
+        {
+            get;
+            set;
+        }
+        [InternalName("accessToken")]
+        public string AccessToken
+        {
+            get;
+            set;
+        }
 
     }
 }

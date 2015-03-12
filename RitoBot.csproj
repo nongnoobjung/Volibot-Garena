@@ -105,6 +105,7 @@
     <Compile Include="PvPNETConnect\RiotObjects\Platform\Leagues\Client\Dto\SummonerLeaguesDTO.cs" />
     <Compile Include="PvPNETConnect\RiotObjects\Platform\Login\AuthenticationCredentials.cs" />
     <Compile Include="PvPNETConnect\RiotObjects\Platform\Login\Session.cs" />
+    <Compile Include="PvPNETConnect\RiotObjects\Platform\Matchmaking\BustedLeaver.cs" />
     <Compile Include="PvPNETConnect\RiotObjects\Platform\Matchmaking\GameQueueConfig.cs" />
     <Compile Include="PvPNETConnect\RiotObjects\Platform\Matchmaking\MatchingThrottleConfig.cs" />
     <Compile Include="PvPNETConnect\RiotObjects\Platform\Matchmaking\MatchMakerParams.cs" />

@@ -1130,5 +1130,26 @@ namespace LoLLauncher
             results.Remove(Id);
             return result;
         }
+
+        public async Task<SearchingForMatchNotification> AttachToLowPriorityQueue(MatchMakerParams matchMakerParams, string accessToken)
+        {
+            TypedObject typedObject = new TypedObject(null);
+            typedObject.Add("LEAVER_BUSTER_ACCESS_TOKEN", accessToken);
+            int key = this.Invoke("matchmakerService", "attachToQueue", new object[]
+			{
+				matchMakerParams.GetBaseTypedObject(),
+				typedObject
+			});
+            while (!this.results.ContainsKey(key))
+            {
+                await Task.Delay(10);
+            }
+            TypedObject tO = this.results[key].GetTO("data").GetTO("body");
+            SearchingForMatchNotification result = new SearchingForMatchNotification(tO);
+            this.results.Remove(key);
+            return result;
+        }
+
     }
+
 }

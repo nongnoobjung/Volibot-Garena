@@ -43,7 +43,7 @@ namespace RitoBot
         public static bool rndSpell = true;
         public static string spell1 = "flash";
         public static string spell2 = "ignite";
-        public static string cversion = "5.1.15_01_09_17_50";
+        public static string cversion = "5.4.15_01_09_17_50";
         public static bool AutoUpdate = false;
         public static bool LoadGUI = false;
         public static frm_MainWindow MainWindow = new frm_MainWindow();
@@ -61,6 +61,7 @@ namespace RitoBot
             Console.WriteLine("--------------imsosharp----------------");
             Console.WriteLine("-----------Garena Support--------------");
             Console.WriteLine("-----------by nongnoobjung-------------");
+            Console.WriteLine("-Low Priority Support Thank Quangcha --");
             Console.WriteLine("=======================================");
             Console.WriteLine();
             Console.WriteLine(getTimestamp() + "Loading config\\settings.ini");

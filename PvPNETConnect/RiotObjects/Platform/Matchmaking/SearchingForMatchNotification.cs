@@ -43,7 +43,7 @@ namespace LoLLauncher.RiotObjects.Platform.Matchmaking
         }
 
         [InternalName("playerJoinFailures")]
-        public QueueDodger PlayerJoinFailures { get; set; }
+        public List<QueueDodger> PlayerJoinFailures { get; set; }
 
         [InternalName("ghostGameSummoners")]
         public object GhostGameSummoners { get; set; }

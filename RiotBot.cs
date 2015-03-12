@@ -71,6 +71,8 @@ namespace RitoBot
         public double rpBalance { get; set; }
         public QueueTypes queueType { get; set; }
         public QueueTypes actualQueueType { get; set; }
+        public int m_leaverBustedPenalty { get; set; }
+        public string m_accessToken { get; set; }
 
         public string region { get; set; }
         public string regionURL;
@@ -338,22 +340,30 @@ namespace RitoBot
                     }
                     else
                     {
-                        try
+                        foreach (QueueDodger current in m.PlayerJoinFailures)
                         {
-                            updateStatus("Couldn't enter Q - " + m.PlayerJoinFailures.Summoner.Name + " : " + m.PlayerJoinFailures.ReasonFailed, Accountname);
-                        }
-                        catch (Exception)
-                        {
-                            if (QueueFlag)
+                            if (current.ReasonFailed == "LEAVER_BUSTED")
                             {
-                                Console.WriteLine(
-                                    "Something went wrong, couldn't enter queue. Check accounts.txt for correct queue type.");
-                                connection.Disconnect();
+                                m_accessToken = current.AccessToken;
+                                if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
+                                {
+                                    this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(this.m_accessToken))
+                        {
+                            this.updateStatus("Waiting For Leaver Busted: " + (float)(this.m_leaverBustedPenalty / 1000) / 60f + " Minute", this.Accountname);
+                            Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
+                            m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
+                            if (m.PlayerJoinFailures == null)
+                            {
+                                this.updateStatus("In Queue:", this.Accountname);
                             }
                             else
                             {
-
-                                this.updateStatus("waiting for leavebuster ;)", Accountname);
+                                this.updateStatus("There was an error in joining lower priority queue.\nDisconnecting.", this.Accountname);
+                                this.connection.Disconnect();
                             }
                         }
                     }
