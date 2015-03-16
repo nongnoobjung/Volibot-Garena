@@ -55,6 +55,7 @@ namespace RitoBot
     {
         public LoginDataPacket loginPacket = new LoginDataPacket();
         public GameDTO currentGame = new GameDTO();
+        public string owned = string.Empty;
         public LoLConnection connection = new LoLConnection();
         public List<ChampionDTO> availableChamps = new List<ChampionDTO>();
         public LoLLauncher.RiotObjects.Platform.Catalog.Champion.ChampionDTO[] availableChampsArray;
@@ -62,6 +63,7 @@ namespace RitoBot
         public bool firstTimeInQueuePop = true;
         public bool firstTimeInCustom = true;
         public Process exeProcess;
+        public bool p = false;
         public string ipath;
         public string Accountname;
         public string Password;
@@ -73,12 +75,16 @@ namespace RitoBot
         public QueueTypes actualQueueType { get; set; }
         public int m_leaverBustedPenalty { get; set; }
         public string m_accessToken { get; set; }
+        public double xp = 0,ip = 0;
+        public int totalgame = 0, win = 0;
+        public bool firstcustom = true;
+        public bool leader = false;
 
         public string region { get; set; }
         public string regionURL;
         public bool QueueFlag;
 
-        public RiotBot(string username, string password, string reg, string path, int threadid, QueueTypes QueueType)
+        public RiotBot(string username, string password, string reg, string path, int threadid, QueueTypes QueueType, bool lead)
         {
             ipath = path;
             Accountname = username;
@@ -86,6 +92,7 @@ namespace RitoBot
             threadID = threadid;
             queueType = QueueType;
             region = reg;
+            leader = lead;
             connection.OnConnect += new LoLConnection.OnConnectHandler(this.connection_OnConnect);
             connection.OnDisconnect += new LoLConnection.OnDisconnectHandler(this.connection_OnDisconnect);
             connection.OnError += new LoLConnection.OnErrorHandler(this.connection_OnError);
@@ -109,6 +116,9 @@ namespace RitoBot
                 case "VN":
                     connection.Connect(username, password, Region.VN, Program.cversion);
                     break;
+                case "ID":
+                    connection.Connect(username, password, Region.ID, Program.cversion);
+                    break;
             }
         }
 
@@ -119,6 +129,14 @@ namespace RitoBot
                 GameDTO game = message as GameDTO;
                 switch (game.GameState)
                 {
+                    case "TEAM_SELECT":
+                        if (Program.IsGameCreated == true && Program.LobbyPlayers == Program.maxBots && Program.LobbyOwner.Equals(Accountname) && leader)
+                        {
+                            Thread.Sleep(2000); 
+                            this.updateStatus("Start Custom Game", Accountname);
+                            await connection.StartChampionSelection(Program.GameID, game.OptimisticLock);
+                        }
+                        break;
                     case "CHAMP_SELECT":
                         if (this.firstTimeInLobby)
                         {
@@ -161,6 +179,7 @@ namespace RitoBot
                                     await connection.SelectSpells(Spell1, Spell2);
 
                                     await connection.SelectChampion(Enums.championToId(Program.championId));
+                                    this.updateStatus("Champion Pick : " + Program.championId, this.Accountname);
                                     await connection.ChampionSelectCompleted();
                                 }
                                 else if (Program.championId == "RANDOM")
@@ -198,6 +217,7 @@ namespace RitoBot
 
                                     var randAvailableChampsArray = availableChampsArray.Shuffle();
                                     await connection.SelectChampion(randAvailableChampsArray.First(champ => champ.Owned || champ.FreeToPlay).ChampionId);
+                                    this.updateStatus("Random Champion", this.Accountname);
                                     await connection.ChampionSelectCompleted();
 
                                 }
@@ -235,6 +255,7 @@ namespace RitoBot
                                     await connection.SelectSpells(Spell1, Spell2);
 
                                     await connection.SelectChampion(availableChampsArray.First(champ => champ.Owned || champ.FreeToPlay).ChampionId);
+                                    this.updateStatus("Random Champion", this.Accountname);
                                     await connection.ChampionSelectCompleted();
                                 }
                             }
@@ -260,7 +281,6 @@ namespace RitoBot
                         QueueFlag = true;
                         break;
                     case "TERMINATED":
-                        this.updateStatus("Re-entering queue", Accountname);
                         this.firstTimeInQueuePop = true;
                         break;
                     case "JOINING_CHAMP_SELECT":
@@ -282,8 +302,6 @@ namespace RitoBot
             else if (message is PlayerCredentialsDto)
             {
                 string str = ipath + "GAME\\";
-                /* string str = Enumerable.Last<string>((IEnumerable<string>)Enumerable.OrderBy<string, DateTime>(Directory.EnumerateDirectories((this.ipath ?? "")
-                     + "RADS\\solutions\\lol_game_client_sln\\releases\\"), (Func<string, DateTime>)(f => new DirectoryInfo(f).CreationTime))) + "\\deploy\\";*/
                 LoLLauncher.RiotObjects.Platform.Game.PlayerCredentialsDto credentials = message as PlayerCredentialsDto;
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.CreateNoWindow = false;
@@ -291,7 +309,7 @@ namespace RitoBot
                 startInfo.FileName = "League of Legends.exe";
                 startInfo.Arguments = "\"8394\" \"LoLLauncher.exe\" \"\" \"" + credentials.ServerIp + " " +
                 credentials.ServerPort + " " + credentials.EncryptionKey + " " + credentials.SummonerId + "\"";
-                updateStatus("Launching League of Legends", Accountname);
+                updateStatus("Launching League of Legends", Accountname);               
                 new Thread((ThreadStart)(() =>
                 {
                     exeProcess = Process.Start(startInfo);
@@ -300,11 +318,146 @@ namespace RitoBot
                     exeProcess.PriorityClass = ProcessPriorityClass.Idle;
                     exeProcess.EnableRaisingEvents = true;
                 })).Start();
+                p = true;
+                Program.IsGameCreated = false;
+                totalgame++;
             }
-            else if (!(message is GameNotification) && !(message is SearchingForMatchNotification))
+            else if (message is EndOfGameStats)
             {
-                if (message is EndOfGameStats)
+                EndOfGameStats eog = message as EndOfGameStats;
+                if (p)
                 {
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    this.updateStatus("========Result========", this.Accountname);
+                    var tempxp = eog.ExperienceEarned + eog.BoostXpEarned;
+                    var tempip = eog.IpEarned + eog.BoostIpEarned;
+                    ip = ip + tempip;
+                    xp = xp + tempxp;
+
+                    bool tempvic = false;
+                    var allParticipants =
+                    new List<PlayerParticipantStatsSummary>(eog.TeamPlayerParticipantStats.ToArray());
+                    foreach (PlayerParticipantStatsSummary summary in allParticipants)
+                    {
+
+                        foreach (RawStatDTO stat in summary.Statistics.Where(stat => stat.StatTypeName.ToLower() == "win"))
+                        {
+                            if (summary.SummonerName == loginPacket.AllSummonerData.Summoner.Name)
+                            {
+                                win++;
+                                tempvic = true;
+                            }
+
+                        }
+                    }
+
+                    if(tempvic){
+                       this.updateStatus("Victory!", this.Accountname);
+                    }
+                    else{
+                       this.updateStatus("Defeat!", this.Accountname);
+                    }
+                    this.updateStatus("IP Earned: " + tempip, this.Accountname);
+                    this.updateStatus("XP Earned: " + tempxp, this.Accountname);
+                    var winrate = (win/totalgame)*100;
+                    this.updateStatus("Win Rate: " + winrate + "%" + "(Win: " + win+ " TotalGame: "+totalgame + ")", this.Accountname);
+                    if (loginPacket.AllSummonerData.SummonerLevel.Level < 30)
+                    {
+                        var xpnextlevel = loginPacket.AllSummonerData.SummonerLevel.ExpToNextLevel;
+                        this.updateStatus("Exp to Next Level : " + xpnextlevel, this.Accountname);
+                    }
+
+                    this.updateStatus("====================", this.Accountname);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Title = " Current Connected: " + Program.connectedAccs + " Total IP: " + ip + " Total XP:" + xp + " Total Game: " + totalgame + " WinRate: " + winrate + "%";
+                    exeProcess.Exited -= exeProcess_Exited;
+                    exeProcess.Kill();
+                    p = false;
+                    loginPacket = await this.connection.GetLoginDataPacketForUser();
+                    archiveSumLevel = sumLevel;
+                    sumLevel = loginPacket.AllSummonerData.SummonerLevel.Level;
+                    if (sumLevel != archiveSumLevel)
+                    {
+                        levelUp();
+                    }
+                    this.updateStatus("Re-entering queue", Accountname);
+                }
+
+                if (queueType == QueueTypes.CUSTOM_DOM_3x3|| queueType == QueueTypes.CUSTOM_HA_3x3)
+                {
+                        if (Program.IsGameCreated == false && leader)
+                        {
+                            PracticeGameConfig cfg = new PracticeGameConfig();
+                            BotParticipant bcg = new BotParticipant();
+
+                            GameMap map = new GameMap();
+                            if (queueType == QueueTypes.CUSTOM_DOM_3x3)
+                            {
+                                map.Description = "desc";
+                                map.DisplayName = "Crystal Scar";
+                                map.TotalPlayers = 6;
+                                map.Name = "Crystal Scar";
+                                map.MapId = (int)GameMode.Dominion;
+                                map.MinCustomPlayers = 1;
+                                cfg.GameMode = StringEnum.GetStringValue(GameMode.Dominion);
+                            }
+                            else
+                            {
+                                map.Description = "desc";
+                                map.DisplayName = "Howling Abyss";
+                                map.TotalPlayers = 6;
+                                map.Name = "Howling Abyss";
+                                map.MapId = (int)GameMode.HowlingAbyss;
+                                map.MinCustomPlayers = 1;
+                                cfg.GameMode = StringEnum.GetStringValue(GameMode.HowlingAbyss);
+                            }
+
+                            cfg.GameName = RandomString(10);
+                            cfg.GamePassword = "Paruru";
+                            cfg.GameMap = map;
+                            cfg.MaxNumPlayers = 6;
+                            cfg.GameTypeConfig = 1;
+                            cfg.AllowSpectators = "NONE";
+
+                            GameDTO result = await connection.CreatePracticeGame(cfg);
+
+
+
+                            // Custom game has been created;
+                            Program.IsGameCreated = true;
+                            Program.GameID = result.Id;
+                            Program.LobbyOwner = Accountname;
+                            Program.LobbyPlayers = 1;
+
+                            // Notify
+                            updateStatus(" Game [" + Program.GameID + "] has been created. Lobby password: " + Program.LobbyPassword, Accountname);
+                            return;
+
+                        }
+                        else
+                        {
+                            do
+                            {
+                                this.updateStatus("Waiting Leader Create Room", Accountname);
+                            } while (!Program.IsGameCreated);
+
+                            if (Program.IsGameCreated == true && Program.LobbyOwner != Accountname && Program.LobbyPlayers < Program.maxBots && !leader)
+                            {
+                                Program.LobbyPlayers++;
+                                await connection.JoinGame(Program.GameID, "Paruru");
+                                updateStatus(" Player has joined the lobby! Players: [" + Program.LobbyPlayers + "/" + Program.maxBots + "]", Accountname);
+                                System.Threading.Thread.Sleep(5000);
+                            }
+                        }
+                               
+                       
+
+
+
+                }
+                else
+                {
+
                     LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams matchParams = new LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams();
                     if (queueType == QueueTypes.INTRO_BOT)
                     {
@@ -358,7 +511,7 @@ namespace RitoBot
                             m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
                             if (m.PlayerJoinFailures == null)
                             {
-                                this.updateStatus("In Queue:", this.Accountname);
+                                this.updateStatus("In Queue: " + queueType.ToString(), this.Accountname);
                             }
                             else
                             {
@@ -368,23 +521,11 @@ namespace RitoBot
                         }
                     }
                 }
-                else
-                {
-                    if (message.ToString().Contains("EndOfGameStats"))
-                    {
-                        EndOfGameStats eog = new EndOfGameStats();
-                        connection_OnMessageReceived(sender, eog);
-                        exeProcess.Exited -= exeProcess_Exited;
-                        exeProcess.Kill();
-                        loginPacket = await this.connection.GetLoginDataPacketForUser();
-                        archiveSumLevel = sumLevel;
-                        sumLevel = loginPacket.AllSummonerData.SummonerLevel.Level;
-                        if (sumLevel != archiveSumLevel)
-                        {
-                            levelUp();
-                        }
-                    }
-                }
+
+            }
+            else
+            {
+
             }
         }
 
@@ -702,7 +843,25 @@ namespace RitoBot
                 Console.WriteLine(e);
             }
         }
+
+        private static Random random = new Random((int)DateTime.Now.Ticks);
+
+        private string RandomString(int size)
+        {
+            StringBuilder builder = new StringBuilder();
+            char ch;
+            for (int i = 0; i < size; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                builder.Append(ch);
+            }
+
+            return builder.ToString();
+        }
+
     }
+
+
 
     public static class EnumerableExtensions
     {

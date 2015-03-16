@@ -18,7 +18,7 @@ namespace RitoBot
     class Enums
     {
         public static object[] champions = new object[] { 
-            "AATROX", "AHRI", "AKALI", "ALISTAR", "AMUMU", "ANIVIA", "ANNIE", "ASHE", "AZIR", "BLITZCRANK", "BRAND", "BRAUM", "CAITLYN", "CASSIOPEIA", "CHOGATH", "CORKI",
+            "AATROX", "AHRI", "AKALI", "ALISTAR", "AMUMU", "ANIVIA", "ANNIE", "ASHE", "AZIR", "BARD", "BLITZCRANK", "BRAND", "BRAUM", "CAITLYN", "CASSIOPEIA", "CHOGATH", "CORKI",
 "DARIUS", "DIANA", "MUNDO", "DRAVEN", "ELISE", "EVELYNN", "EZREAL", "FIDDLESTICKS", "FIORA", "FIZZ", "GALIO", "GANGPLANK", "GAREN", "GNAR", "GRAGAS", "GRAVES",
 "HECARIM", "HEIMERDIGER", "IRELIA", "JANNA", "JARVAN", "JAX", "JAYCE", "JINX", "KALISTA", "KARMA", "KARTHUS", "KASSADIN", "KATARINA", "KAYLE", "KENNEN",
 "KHAZIX", "KOGMAW", "LEBLANC", "LEESIN", "LEONA", "LISSANDRA", "LUCIAN", "LULU", "LUX", "MALPHITE", "MALZAHAR", "MAOKAI", "MASTERYI", "MISSFORTUNE",
@@ -28,10 +28,10 @@ namespace RitoBot
 "VELKOZ", "VI", "VIKTOR", "VLADIMIR", "VOLIBEAR", "WARWICK", "WUKONG", "XERATH", "XINZHAO", "YASUO", "YORICK", "ZAC", "ZED", "ZIGGS", "ZILEAN", "ZYRA"
         };
         public static object[] queues = new object[] {
-            "NORMAL_5x5", "NORMAL_3x3", "INTRO_BOT", "BEGINNER_BOT", "MEDIUM_BOT", "ARAM"
+            "NORMAL_5x5", "NORMAL_3x3", "INTRO_BOT", "BEGINNER_BOT", "MEDIUM_BOT", "ARAM", "RANK_SOLO", "CUSTOM_DOM_3x3", "CUSTOM_HA_3x3"
         };
         public static object[] regions = new object[] {
-            "NA", "EUW", "EUNE", "OCE", "LAN", "LAS", "BR", "TR", "RU", "QQ"
+            "TH", "TW", "SGMY", "VN", "PH", "ID"
         };
         public static object[] spells = new object[] {
             "BARRIER", "CLAIRVOYANCE", "CLARITY", "CLEANSE", "EXHAUST", "FLASH", "GARRISON", "GHOST", "HEAL", "IGNITE", "REVIVE", "SMITE", "TELEPORT"
@@ -58,6 +58,8 @@ namespace RitoBot
                     return 22;
                 case "AZIR":
                     return 268;
+                case "BARD":
+                    return 432;
                 case "BLITZCRANK":
                     return 53;
                 case "BRAND":

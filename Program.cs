@@ -9,6 +9,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Ini;
@@ -43,10 +45,18 @@ namespace RitoBot
         public static bool rndSpell = true;
         public static string spell1 = "flash";
         public static string spell2 = "ignite";
-        public static string cversion = "5.4.15_01_09_17_50";
+        public static string cversion = "5.5.15_01_09_17_50";
         public static bool AutoUpdate = false;
         public static bool LoadGUI = false;
         public static frm_MainWindow MainWindow = new frm_MainWindow();
+
+        public static bool IsGameCreated = false;
+        public static double GameID = 0;
+        public static int LobbyPlayers = 0;
+        public static string LobbyPassword = "Paruru";
+        public static string LobbyOwner = "";
+        public static string leader = "";
+        private static bool gettoken = false;
 
         static void Main(string[] args)
         {
@@ -86,6 +96,7 @@ namespace RitoBot
             loadAccounts();
             int curRunning = 0;
             if (LoadGUI) MainWindow.ShowDialog();
+
             if (!LoadGUI)
             {
                 foreach (string acc in accounts)
@@ -95,6 +106,8 @@ namespace RitoBot
                         accounts2.RemoveAt(0);
                         string Accs = acc;
                         string[] stringSeparators = new string[] { "|" };
+                        bool lead = false;
+                        string token = "";
                         var result = Accs.Split(stringSeparators, StringSplitOptions.None);
                         curRunning += 1;
                         if (result[0].Contains("username"))
@@ -102,17 +115,29 @@ namespace RitoBot
                             Console.WriteLine("Please add your accounts into config\\accounts.txt");
                             goto ReloadAccounts;
                         }
-                        if (result[2] != null)
+                       /* if (result[3].Contains("Leader") || result.Contains("leader"))
                         {
-                            QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[2]);
-                            RiotBot ritoBot = new RiotBot(result[0], result[1], Region, Path2, curRunning, queuetype);
+                            lead = true;
+                        }*/
+                        Console.WriteLine(getTimestamp()+"Bot "+curRunning+" Waiting Launch Game From Garena");
+                        token = GetGarenaToken();
+                        if (result[1] != null)
+                        {
+                            QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[1]);
+                            RiotBot ritoBot = new RiotBot(result[0], token, Region, Path2, curRunning, queuetype, lead);
                         }
                         else
                         {
                             QueueTypes queuetype = QueueTypes.ARAM;
-                            RiotBot ritoBot = new RiotBot(result[0], result[1], Region, Path2, curRunning, queuetype);
+                            RiotBot ritoBot = new RiotBot(result[0], token, Region, Path2, curRunning, queuetype, lead);
                         }
                         Console.Title = "RitoBot Console | Currently connected: " + connectedAccs;
+                        if (result[1] == "CUSTOM_HA_3x3")
+                        {
+                            while (!Program.IsGameCreated)
+                                System.Threading.Thread.Sleep(1000);
+                        }
+
                         if (curRunning == maxBots)
                             break;
                     }
@@ -146,13 +171,22 @@ namespace RitoBot
                 string[] stringSeparators = new string[] { "|" };
                 var result = Accs.Split(stringSeparators, StringSplitOptions.None);
                 curRunning += 1;
-                if(result[2] != null)
+                bool lead = false;
+                string token = "";
+              /*  if (result[3].Contains("Leader") || result.Contains("leader"))
                 {
-                    QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[2]);
-                    RiotBot ritoBot = new RiotBot(result[0], result[1], Region, Path2, curRunning, queuetype);
+                    lead = true;
+                }*/
+                Console.WriteLine("Waiting Launch Game From Garena");
+                token = GetGarenaToken();
+                Console.WriteLine("Get Token!");
+                if(result[1] != null)
+                {
+                    QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[1]);
+                    RiotBot ritoBot = new RiotBot(result[0], token, Region, Path2, curRunning, queuetype, lead);
                 } else {
                     QueueTypes queuetype = QueueTypes.ARAM;
-                    RiotBot ritoBot = new RiotBot(result[0], result[1], Region, Path2, curRunning, queuetype);
+                    RiotBot ritoBot = new RiotBot(result[0], token, Region, Path2, curRunning, queuetype, lead);
                 }
                 Console.Title = "RitoBot Console | Currently connected: " + connectedAccs;
                 if (curRunning == maxBots)
@@ -260,7 +294,7 @@ namespace RitoBot
                 
                 var newfile = File.Create(configTxtLocation);
                 newfile.Close();
-                var content = "[General]\nLauncherPath=C:\\GarenaLoL\\GameData\\Apps\\LoL\\\nLoadGUI=false\nMaxBots=1\nMaxLevel=31\nChampionPick=Annie\nSpell1=Flash\nSpell2=Exhaust\nRndSpell=false\nReplaceConfig=false\nAutoUpdate=false\n\n[Account]\nRegion=TH\nBuyBoost=false";
+                var content = "[General]\nLauncherPath=C:\\GarenaLoL\\GameData\\Apps\\LoL\\\nLoadGUI=false\nMaxBots=1\nMaxLevel=31\nChampionPick=Annie\nSpell1=Flash\nSpell2=Exhaust\nRndSpell=false\nReplaceConfig=false\nAutoUpdate=false\n\n[Account]\nRegion=TH\nBuyBoost=false\n\n[Custom]\nLobbyPassword=Paruru";
                 var separator = new string[] { "\n" };
                 string[] contentlines = content.Split(separator,StringSplitOptions.None);
                 File.WriteAllLines(configTxtLocation, contentlines);
@@ -276,9 +310,62 @@ namespace RitoBot
             {
                 var newfile = File.CreateText(accountsTxtLocation);
                 newfile.Close();
-                string[] content = { "username|garenaToken|QueueType" };
+                string[] content = { "username|QueueType" };
                 File.WriteAllLines(accountsTxtLocation, content);
             }
         }
+
+
+        private static string GetGarenaToken()
+        {
+           string s1 = "";
+           bool token = false;
+           do
+           {
+               foreach (var process in Process.GetProcessesByName("lol"))
+               {
+                   try
+                   {
+
+                       s1 = GetCommandLine(process);
+                       foreach (var p1 in Process.GetProcessesByName("lolclient"))
+                       {
+                           p1.Kill();
+                       }
+                       process.Kill();
+                       s1 = s1.Substring(1);
+                       token = true;
+                   }
+                   catch (Win32Exception ex)
+                   {
+                       Console.WriteLine("Error Get Garena Token");
+                       if ((uint)ex.ErrorCode != 0x80004005)
+                       {
+                           throw;
+                       }
+                   }
+               }
+           } while (!token);
+            
+
+            return s1;
+
+        }
+
+        private static string GetCommandLine(Process process)
+        {
+            var commandLine = new StringBuilder("");
+
+            using (var searcher = new ManagementObjectSearcher("SELECT CommandLine FROM Win32_Process WHERE ProcessId = " + process.Id))
+            {
+                foreach (var @object in searcher.Get())
+                {
+                    commandLine.Append(@object["CommandLine"]);
+                }
+            }
+
+            return commandLine.ToString();
+        }
+
    }
 }

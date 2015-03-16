@@ -16,6 +16,7 @@ using LoLLauncher.RiotObjects.Platform.Game;
 using LoLLauncher.RiotObjects.Platform.Game.Message;
 using LoLLauncher.RiotObjects.Platform.Matchmaking;
 using LoLLauncher.RiotObjects.Platform.Messaging;
+using LoLLauncher.RiotObjects.Platform.Statistics;
 using RitoBot;
 
 namespace LoLLauncher
@@ -969,6 +970,8 @@ namespace LoLLauncher
                                                 MessageReceived(new StoreFulfillmentNotification(body));
                                             else if (body.type.Equals("com.riotgames.platform.messaging.StoreFulfillmentNotification"))
                                                 MessageReceived(new StoreAccountBalanceNotification(body));
+                                            else if (body.type.Equals("com.riotgames.platform.statistics.EndOfGameStats"))
+                                                MessageReceived(new EndOfGameStats(body));
                                             else
                                                 MessageReceived(body);
                                         })).Start();
