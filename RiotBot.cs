@@ -282,6 +282,7 @@ namespace RitoBot
                         break;
                     case "TERMINATED":
                         this.firstTimeInQueuePop = true;
+                        this.updateStatus("Someone Dodge Re-entering queue", Accountname);
                         break;
                     case "JOINING_CHAMP_SELECT":
                         if (this.firstTimeInQueuePop && game.StatusOfParticipants.Contains("1"))
@@ -449,11 +450,6 @@ namespace RitoBot
                                 System.Threading.Thread.Sleep(5000);
                             }
                         }
-                               
-                       
-
-
-
                 }
                 else
                 {
@@ -484,6 +480,15 @@ namespace RitoBot
                     {
                         queueType = actualQueueType;
                     }
+                    else if (queueType == QueueTypes.ODINBOT)
+                    {
+                        matchParams.BotDifficulty = "MEDIUM";
+                    }
+                    else if (actualQueueType == QueueTypes.ODIN)
+                    {
+                        queueType = actualQueueType;
+                    }
+
 
                     matchParams.QueueIds = new Int32[1] { (int)queueType };
                     LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);

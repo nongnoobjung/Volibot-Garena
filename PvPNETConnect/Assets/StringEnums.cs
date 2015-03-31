@@ -167,6 +167,8 @@ namespace LoLLauncher
         BEGINNER_BOT = 32,
         MEDIUM_BOT = 33,
         ARAM = 65,
+        ODIN = 16,
+        ODINBOT = 25,
         CUSTOM_DOM_3x3 = 998,
         CUSTOM_HA_3x3 = 997,
         CUSTOM = 999

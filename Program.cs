@@ -21,6 +21,7 @@ using System.Net;
 using System.Management;
 using LoLLauncher;
 using System.Windows.Forms;
+using System.Security.Principal;
 
 namespace RitoBot
 {
@@ -45,7 +46,7 @@ namespace RitoBot
         public static bool rndSpell = true;
         public static string spell1 = "flash";
         public static string spell2 = "ignite";
-        public static string cversion = "5.5.15_01_09_17_50";
+        public static string cversion = "5.6.15_01_09_17_50";
         public static bool AutoUpdate = false;
         public static bool LoadGUI = false;
         public static frm_MainWindow MainWindow = new frm_MainWindow();
@@ -67,13 +68,17 @@ namespace RitoBot
             Console.SetWindowSize(Console.WindowWidth + 5, Console.WindowHeight);
             Console.WriteLine("=======================================");
             Console.WriteLine("Garena Volibot up-to-date for v" + cversion.Substring(0,4));
-            Console.WriteLine("--------All features enabled!----------");
-            Console.WriteLine("--------------imsosharp----------------");
-            Console.WriteLine("-----------Garena Support--------------");
-            Console.WriteLine("-----------by nongnoobjung-------------");
-            Console.WriteLine("-Low Priority Support Thank Quangcha --");
+            Console.WriteLine("-----------by nongnoobjung-------------");   
             Console.WriteLine("=======================================");
             Console.WriteLine();
+            WindowsIdentity winIdentity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal winPrincipal = new WindowsPrincipal(winIdentity);
+            if (!winPrincipal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                Console.WriteLine(getTimestamp() + "Error to Launch Volibot Make Sure Run As Admin");   
+                return;
+            }
+
             Console.WriteLine(getTimestamp() + "Loading config\\settings.ini");
             loadConfiguration();
             if (replaceConfig)
@@ -95,7 +100,7 @@ namespace RitoBot
             ReloadAccounts:
             loadAccounts();
             int curRunning = 0;
-            if (LoadGUI) MainWindow.ShowDialog();
+            //if (LoadGUI) MainWindow.ShowDialog();
 
             if (!LoadGUI)
             {
@@ -132,11 +137,11 @@ namespace RitoBot
                             RiotBot ritoBot = new RiotBot(result[0], token, Region, Path2, curRunning, queuetype, lead);
                         }
                         Console.Title = "RitoBot Console | Currently connected: " + connectedAccs;
-                        if (result[1] == "CUSTOM_HA_3x3")
+                        /*if (result[1] == "CUSTOM")
                         {
                             while (!Program.IsGameCreated)
                                 System.Threading.Thread.Sleep(1000);
-                        }
+                        }*/
 
                         if (curRunning == maxBots)
                             break;
